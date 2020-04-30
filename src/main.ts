@@ -15,9 +15,8 @@ async function run(): Promise<void> {
     io.mkdirP("bin");
 
     const tgBinPath = path.join(binPath, "terragrunt");
-    const tgDownloadPath = await tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`);
+    const tgDownloadPath = await tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`, tgBinPath);
     core.info("tg download path: " + tgDownloadPath);
-    io.mv(tgDownloadPath, binPath);
     fs.chmodSync(tgBinPath, "755");
     tc.cacheFile(tgBinPath, "terragrunt", "terragrunt", terragruntVersion);
     core.addPath(tgBinPath);
