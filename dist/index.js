@@ -1004,7 +1004,7 @@ async function run() {
         const terraformDownloadUrl = `https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`;
         core.info(`⬇️ downloading ${terraformDownloadUrl}`);
         const tfZipDownloadPath = await tc.downloadTool(terraformDownloadUrl);
-        const tfExtractedPath = await tc.extractTar(tfZipDownloadPath)
+        const tfExtractedPath = await tc.extractZip(tfZipDownloadPath)
         const tfBinPath = path.join(tfExtractedPath, tfName)
         await tc.cacheFile(tfBinPath, tfName, tfName, terraformVersion)
         tfCachePath = tc.find(tfName, terraformVersion);
