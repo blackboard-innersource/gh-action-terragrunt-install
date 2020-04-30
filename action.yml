@@ -1,0 +1,12 @@
+name: terragrunt-install
+description: Installs terragrunt and terraform in workspace, adds them to PATH, and caches.
+inputs:
+  terragrunt-version:
+    description: Terragrunt version
+    required: true
+  terraform-version:
+    description: Terraform version
+    required: true
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
