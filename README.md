@@ -17,6 +17,6 @@ This action takes in a terragrunt and terraform verion, downloads the tools, add
 ```yaml
 uses: blackboard-innersource/gh-action-terragrunt-install@master
 with:
-  terraform-version: "0.1.0"
+  terragrunt-version: "0.1.0"
   terraform-version: "0.1.0"
 ```
