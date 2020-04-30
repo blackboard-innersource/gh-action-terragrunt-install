@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(198);
+/******/ 		return __webpack_require__(104);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -961,6 +961,48 @@ module.exports = require("os");
 
 /***/ }),
 
+/***/ 104:
+/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+
+const core = __webpack_require__(470);
+const tc = __webpack_require__(533);
+const io = __webpack_require__(1);
+const path = __webpack_require__(622);
+const fs = __webpack_require__(747);
+
+async function run() {
+  try {
+    const terragruntVersion = core.getInput("terragrunt-version");
+    core.debug("terragrunt version " + terragruntVersion);
+    const terraformVersion = core.getInput("terraform-version");
+    core.debug("terraform version " + terraformVersion);
+
+    const binPath = "bin";
+    io.mkdirP("bin");
+
+    const tgBinPath = path.join(binPath, "terragrunt");
+    const tgDownloadPath = await tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`, tgBinPath);
+    core.info("tg download path: " + tgDownloadPath);
+    fs.chmodSync(tgBinPath, "755");
+    tc.cacheFile(tgBinPath, "terragrunt", "terragrunt", terragruntVersion);
+    core.addPath(tgBinPath);
+
+    const terraformBinPath = path.join(binPath, "terraform");
+    const tfDownloadPath = await tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`);
+    await tc.extractZip(tfDownloadPath, binPath);
+    tc.cacheFile(terraformBinPath, "terraform", "terraform", terraformVersion);
+    core.addPath(terraformBinPath);
+    io.rmRF(tfDownloadPath);
+  } catch (error) {
+    core.setFailed(error.message)
+  }
+}
+
+run()
+
+
+/***/ }),
+
 /***/ 129:
 /***/ (function(module) {
 
@@ -1251,65 +1293,6 @@ if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
   debug = function() {};
 }
 exports.debug = debug; // for test
-
-
-/***/ }),
-
-/***/ 198:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const tc = __importStar(__webpack_require__(533));
-const io = __importStar(__webpack_require__(1));
-const path = __importStar(__webpack_require__(622));
-const fs = __importStar(__webpack_require__(747));
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const terragruntVersion = core.getInput("terragrunt-version");
-            core.debug("terragrunt version " + terragruntVersion);
-            const terraformVersion = core.getInput("terraform-version");
-            core.debug("terraform version " + terraformVersion);
-            const binPath = "bin";
-            io.mkdirP("bin");
-            const tgBinPath = path.join(binPath, "terragrunt");
-            const tgDownloadPath = yield tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`, tgBinPath);
-            core.info("tg download path: " + tgDownloadPath);
-            fs.chmodSync(tgBinPath, "755");
-            tc.cacheFile(tgBinPath, "terragrunt", "terragrunt", terragruntVersion);
-            core.addPath(tgBinPath);
-            const terraformBinPath = path.join(binPath, "terraform");
-            const tfDownloadPath = yield tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`);
-            yield tc.extractZip(tfDownloadPath, binPath);
-            tc.cacheFile(terraformBinPath, "terraform", "terraform", terraformVersion);
-            core.addPath(terraformBinPath);
-            io.rmRF(tfDownloadPath);
-        }
-        catch (error) {
-            core.setFailed(error.message);
-        }
-    });
-}
-run();
 
 
 /***/ }),
