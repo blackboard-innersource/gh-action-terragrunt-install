@@ -1281,6 +1281,7 @@ const core = __importStar(__webpack_require__(470));
 const tc = __importStar(__webpack_require__(533));
 const io = __importStar(__webpack_require__(1));
 const path = __importStar(__webpack_require__(622));
+const fs = __importStar(__webpack_require__(747));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -1293,6 +1294,7 @@ function run() {
             const tgBinPath = path.join(binPath, "terragrunt");
             yield tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`, tgBinPath);
             tc.cacheFile(binPath, "terragrunt", "terragrunt", terragruntVersion);
+            fs.chmodSync(tgBinPath, "755");
             core.addPath(tgBinPath);
             const terraformBinPath = path.join(binPath, "terraform");
             const tfDownloadPath = yield tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`);

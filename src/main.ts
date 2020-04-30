@@ -2,6 +2,7 @@ import * as core from "@actions/core";
 import * as tc from "@actions/tool-cache"
 import * as io from "@actions/io";
 import * as path from "path";
+import * as fs from "fs";
 
 async function run(): Promise<void> {
   try {
@@ -18,6 +19,7 @@ async function run(): Promise<void> {
       tgBinPath
     );
     tc.cacheFile(binPath, "terragrunt", "terragrunt", terragruntVersion);
+    fs.chmodSync(tgBinPath, "755");
     core.addPath(tgBinPath);
 
     const terraformBinPath = path.join(binPath, "terraform");
@@ -26,7 +28,6 @@ async function run(): Promise<void> {
     tc.cacheFile(terraformBinPath, "terraform", "terraform", terraformVersion);
     core.addPath(terraformBinPath);
     io.rmRF(tfDownloadPath);
-    
   } catch (error) {
     core.setFailed(error.message)
   }
