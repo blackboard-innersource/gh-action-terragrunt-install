@@ -1293,10 +1293,12 @@ function run() {
             const tgBinPath = path.join(binPath, "terragrunt");
             yield tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`, tgBinPath);
             tc.cacheFile(binPath, "terragrunt", "terragrunt", terragruntVersion);
+            core.addPath(tgBinPath);
             const terraformBinPath = path.join(binPath, "terraform");
             const tfDownloadPath = yield tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`);
             yield tc.extractZip(tfDownloadPath, binPath);
             tc.cacheFile(terraformBinPath, "terraform", "terraform", terraformVersion);
+            core.addPath(terraformBinPath);
             io.rmRF(tfDownloadPath);
         }
         catch (error) {

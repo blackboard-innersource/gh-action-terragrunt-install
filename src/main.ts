@@ -18,11 +18,13 @@ async function run(): Promise<void> {
       tgBinPath
     );
     tc.cacheFile(binPath, "terragrunt", "terragrunt", terragruntVersion);
+    core.addPath(tgBinPath);
 
     const terraformBinPath = path.join(binPath, "terraform");
     const tfDownloadPath = await tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`)
     await tc.extractZip(tfDownloadPath, binPath);
     tc.cacheFile(terraformBinPath, "terraform", "terraform", terraformVersion);
+    core.addPath(terraformBinPath);
     io.rmRF(tfDownloadPath);
     
   } catch (error) {
