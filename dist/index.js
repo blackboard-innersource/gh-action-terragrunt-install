@@ -966,9 +966,8 @@ module.exports = require("os");
 
 const core = __webpack_require__(470);
 const tc = __webpack_require__(533);
-const io = __webpack_require__(1);
-const path = __webpack_require__(622);
 const fs = __webpack_require__(747);
+const path = __webpack_require__(622);
 
 async function run() {
   try {
@@ -977,22 +976,46 @@ async function run() {
     const terraformVersion = core.getInput("terraform-version");
     core.debug("terraform version " + terraformVersion);
 
-    const binPath = "bin";
-    io.mkdirP("bin");
+    const tgName = 'terragrunt';
+    const tfName = 'terraform';
 
-    const tgBinPath = path.join(binPath, "terragrunt");
-    const tgDownloadPath = await tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`, tgBinPath);
-    core.info("tg download path: " + tgDownloadPath);
-    fs.chmodSync(tgBinPath, "755");
-    tc.cacheFile(tgBinPath, "terragrunt", "terragrunt", terragruntVersion);
-    core.addPath(tgBinPath);
+    let tgCachePath = tc.find(tgName, terragruntVersion);
+    if(!tgCachePath) {
+        core.info('no terragrunt found in cache');
+        const tgDownloadUrl = `https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`;
+        core.info(`⬇️ downloading ${tgDownloadUrl}`);
+        const tgDownloadPath = await tc.downloadTool(tgDownloadUrl);
+        core.info('downloaded terragrunt to ' + tgDownloadPath);
+        fs.chmodSync(tgDownloadPath, "755")
+        await tc.cacheFile(tgDownloadPath, tgName, tgName, terragruntVersion);
+        tgCachePath = tc.find(tgName, terragruntVersion);
+        core.info(`adding ${tgCachePath} to PATH`);
+        core.addPath(tgCachePath);
+    } else {
+        core.info('terragrunt found in cache at ' + tgCachePath);
+        core.info(`adding ${tgCachePath} to PATH`);
+        core.addPath(tgCachePath);
+    }
+    // exec.exec('terragrunt -v');
 
-    const terraformBinPath = path.join(binPath, "terraform");
-    const tfDownloadPath = await tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`);
-    await tc.extractZip(tfDownloadPath, binPath);
-    tc.cacheFile(terraformBinPath, "terraform", "terraform", terraformVersion);
-    core.addPath(terraformBinPath);
-    io.rmRF(tfDownloadPath);
+    let tfCachePath = tc.find(tfName, terraformVersion);
+    if(!tfCachePath) {
+        core.info('no terraform found in cache');
+        const terraformDownloadUrl = `https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`;
+        core.info(`⬇️ downloading ${terraformDownloadUrl}`);
+        const tfZipDownloadPath = await tc.downloadTool(terraformDownloadUrl);
+        const tfExtractedPath = await tc.extractTar(tfZipDownloadPath)
+        const tfBinPath = path.join(tfExtractedPath, tfName)
+        await tc.cacheFile(tfBinPath, tfName, tfName, terraformVersion)
+        tfCachePath = tc.find(tfName, terraformVersion);
+        core.info(`adding ${tfCachePath} to PATH`);
+        core.addPath(tgCachePath);
+    } else {
+        core.info('terraform found in cache at ' + tfCachePath);
+        core.info(`adding ${tfCachePath} to PATH`);
+        core.addPath(tfCachePath);
+    }
+    // exec.exec('terraform version');
   } catch (error) {
     core.setFailed(error.message)
   }

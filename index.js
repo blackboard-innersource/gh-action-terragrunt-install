@@ -1,7 +1,5 @@
 const core = require("@actions/core");
 const tc = require("@actions/tool-cache");
-const io = require("@actions/io");
-const exec = require("@actions/exec");
 const fs = require("fs");
 const path = require("path");
 
