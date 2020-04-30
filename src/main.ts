@@ -15,15 +15,14 @@ async function run(): Promise<void> {
     io.mkdirP("bin");
 
     const tgBinPath = path.join(binPath, "terragrunt");
-    await tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`,
-      tgBinPath
-    );
-    tc.cacheFile(binPath, "terragrunt", "terragrunt", terragruntVersion);
+    const tgDownloadPath = await tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`);
+    io.mv(tgDownloadPath, tgBinPath);
     fs.chmodSync(tgBinPath, "755");
+    tc.cacheFile(tgBinPath, "terragrunt", "terragrunt", terragruntVersion);
     core.addPath(tgBinPath);
 
     const terraformBinPath = path.join(binPath, "terraform");
-    const tfDownloadPath = await tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`)
+    const tfDownloadPath = await tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`);
     await tc.extractZip(tfDownloadPath, binPath);
     tc.cacheFile(terraformBinPath, "terraform", "terraform", terraformVersion);
     core.addPath(terraformBinPath);

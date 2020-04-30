@@ -1292,9 +1292,10 @@ function run() {
             const binPath = "bin";
             io.mkdirP("bin");
             const tgBinPath = path.join(binPath, "terragrunt");
-            yield tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`, tgBinPath);
-            tc.cacheFile(binPath, "terragrunt", "terragrunt", terragruntVersion);
+            const tgDownloadPath = yield tc.downloadTool(`https://github.com/gruntwork-io/terragrunt/releases/download/v${terragruntVersion}/terragrunt_linux_amd64`);
+            io.mv(tgDownloadPath, tgBinPath);
             fs.chmodSync(tgBinPath, "755");
+            tc.cacheFile(tgBinPath, "terragrunt", "terragrunt", terragruntVersion);
             core.addPath(tgBinPath);
             const terraformBinPath = path.join(binPath, "terraform");
             const tfDownloadPath = yield tc.downloadTool(`https://releases.hashicorp.com/terraform/${terraformVersion}/terraform_${terraformVersion}_linux_amd64.zip`);
