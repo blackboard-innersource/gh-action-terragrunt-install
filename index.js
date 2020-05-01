@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const tc = require("@actions/tool-cache");
 const fs = require("fs");
 const path = require("path");
+const exec = require("@actions/exec");
 
 async function run() {
   try {
@@ -30,7 +31,7 @@ async function run() {
         core.info(`adding ${tgCachePath} to PATH`);
         core.addPath(tgCachePath);
     }
-    // exec.exec('terragrunt -v');
+    exec.exec(`${tgName} -v`);
 
     let tfCachePath = tc.find(tfName, terraformVersion);
     if(!tfCachePath) {
@@ -43,13 +44,13 @@ async function run() {
         await tc.cacheFile(tfBinPath, tfName, tfName, terraformVersion)
         tfCachePath = tc.find(tfName, terraformVersion);
         core.info(`adding ${tfCachePath} to PATH`);
-        core.addPath(tgCachePath);
+        core.addPath(tfCachePath);
     } else {
         core.info('terraform found in cache at ' + tfCachePath);
         core.info(`adding ${tfCachePath} to PATH`);
         core.addPath(tfCachePath);
     }
-    // exec.exec('terraform version');
+    exec.exec(`${tfName} version`);
   } catch (error) {
     core.setFailed(error.message)
   }
