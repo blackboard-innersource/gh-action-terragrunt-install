@@ -968,6 +968,7 @@ const core = __webpack_require__(470);
 const tc = __webpack_require__(533);
 const fs = __webpack_require__(747);
 const path = __webpack_require__(622);
+const exec = __webpack_require__(986);
 
 async function run() {
   try {
@@ -996,7 +997,7 @@ async function run() {
         core.info(`adding ${tgCachePath} to PATH`);
         core.addPath(tgCachePath);
     }
-    // exec.exec('terragrunt -v');
+    exec.exec(`${tgName} -v`);
 
     let tfCachePath = tc.find(tfName, terraformVersion);
     if(!tfCachePath) {
@@ -1009,13 +1010,13 @@ async function run() {
         await tc.cacheFile(tfBinPath, tfName, tfName, terraformVersion)
         tfCachePath = tc.find(tfName, terraformVersion);
         core.info(`adding ${tfCachePath} to PATH`);
-        core.addPath(tgCachePath);
+        core.addPath(tfCachePath);
     } else {
         core.info('terraform found in cache at ' + tfCachePath);
         core.info(`adding ${tfCachePath} to PATH`);
         core.addPath(tfCachePath);
     }
-    // exec.exec('terraform version');
+    exec.exec(`${tfName} version`);
   } catch (error) {
     core.setFailed(error.message)
   }
