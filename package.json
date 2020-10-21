@@ -1,6 +1,6 @@
 {
   "name": "gh-action-terragrunt-install",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "GitHub action for installing terraform and terragrunt",
   "main": "index.js",
